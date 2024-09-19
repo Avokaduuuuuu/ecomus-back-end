@@ -5,9 +5,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class EcomusApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(EcomusApplication.class, args);
     }
-
 }
+
+
