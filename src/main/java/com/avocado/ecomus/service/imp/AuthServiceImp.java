@@ -1,5 +1,6 @@
 package com.avocado.ecomus.service.imp;
 
+import com.avocado.ecomus.dto.RoleDto;
 import com.avocado.ecomus.dto.UserDto;
 import com.avocado.ecomus.entity.UserEntity;
 import com.avocado.ecomus.exception.UserNotFoundException;
@@ -40,6 +41,11 @@ public class AuthServiceImp implements AuthService {
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
+                .role(RoleDto
+                        .builder()
+                        .id(user.getRole().getId())
+                        .name(user.getRole().getName())
+                        .build())
                 .build();
     }
 }
