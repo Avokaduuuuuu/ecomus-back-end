@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @Getter
-public class UserNotFoundException extends RuntimeException {
-    private String mess;
+public class FileNotFoundException extends RuntimeException{
+    private String message;
 }
