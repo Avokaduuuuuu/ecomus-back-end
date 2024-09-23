@@ -9,10 +9,13 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.security.AuthProvider;
 import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class CustomAuthProvider implements AuthenticationProvider {
@@ -31,7 +34,10 @@ public class CustomAuthProvider implements AuthenticationProvider {
             throw new BadCredentialsException("Invalid username or password");
         }
 
-        return new UsernamePasswordAuthenticationToken("", "", new ArrayList<>());
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(user.getRole().getName()));
+
+        return new UsernamePasswordAuthenticationToken("", "", authorities);
     }
 
     @Override
