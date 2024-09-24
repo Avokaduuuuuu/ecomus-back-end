@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 public class UserNotFoundException extends RuntimeException {
-    private String mess;
+    private String message;
 }

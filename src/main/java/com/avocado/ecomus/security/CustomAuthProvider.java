@@ -30,10 +30,6 @@ public class CustomAuthProvider implements AuthenticationProvider {
 
         UserDto user = authService.login(new AuthReq(username, password));
 
-        if (user == null) {
-            throw new BadCredentialsException("Invalid username or password");
-        }
-
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(user.getRole().getName()));
 
