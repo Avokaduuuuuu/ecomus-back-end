@@ -33,7 +33,7 @@ public class AuthServiceImp implements AuthService {
 
         UserEntity user = optionalUser.get();
         if (!passwordEncoder.matches(req.password(), user.getPassword())) {
-            throw new BadCredentialsException("Bad credentials");
+            throw new BadCredentialsException("Password is incorrect");
         }
         return UserDto
                 .builder()
