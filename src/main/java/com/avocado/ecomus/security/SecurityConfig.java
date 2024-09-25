@@ -29,6 +29,8 @@ public class SecurityConfig {
 
     private final String[] PUBLIC_URLS = {"/api/auth/**", "/api/files/**"};
 
+    private final String[] ADMIN_URLS = {"/api/products/add"};
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -41,6 +43,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> {
                     request.requestMatchers(PUBLIC_URLS).permitAll();
+                    request.requestMatchers(ADMIN_URLS).hasRole("ADMIN");
                     request.anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
