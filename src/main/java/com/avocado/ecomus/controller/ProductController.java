@@ -6,13 +6,11 @@ import com.avocado.ecomus.payload.req.AddProductRequest;
 import com.avocado.ecomus.payload.resp.BaseResp;
 import com.avocado.ecomus.service.ProductService;
 import jakarta.transaction.Transactional;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/products")
@@ -33,5 +31,13 @@ public class ProductController {
             resp.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
             return new ResponseEntity<>(resp, HttpStatus.OK);
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getAll(){
+        BaseResp resp = new BaseResp();
+        resp.setData(productService.getAllProducts());
+        resp.setMsg("All products success");
+        return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 }
