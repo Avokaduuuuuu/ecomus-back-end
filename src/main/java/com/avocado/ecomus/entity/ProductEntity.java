@@ -41,6 +41,9 @@ public class ProductEntity {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     List<ProductCategory> productCategories;
 
+    @OneToMany(mappedBy = "product")
+    List<VariantEntity> variants;
+
     public void addCategory(CategoryEntity category) {
         if (this.productCategories == null) productCategories = new ArrayList<>();
         ProductCategory productCategory = new ProductCategory();
