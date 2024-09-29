@@ -7,6 +7,7 @@ import com.avocado.ecomus.dto.SizeDto;
 import com.avocado.ecomus.entity.ProductEntity;
 import com.avocado.ecomus.exception.BrandNotFoundException;
 import com.avocado.ecomus.exception.CategoryNotFoundException;
+import com.avocado.ecomus.exception.ProductNotFoundException;
 import com.avocado.ecomus.payload.req.AddProductRequest;
 import com.avocado.ecomus.repository.BrandRepository;
 import com.avocado.ecomus.repository.CategoryRepository;
@@ -121,5 +122,19 @@ public class ProductServiceImp implements ProductService {
                     return productDto;
                 })
                 .toList();
+    }
+
+    @Override
+    public ProductDto getProductById(int id) {
+        ProductDto productDto = null;
+        for (ProductDto products : getAllProducts()) {
+            if (products.getId() == id) {
+                productDto = products;
+            }
+        }
+        if (productDto == null) {
+            throw new ProductNotFoundException("Product with id " + id + " not found");
+        }
+        return productDto;
     }
 }

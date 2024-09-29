@@ -30,7 +30,7 @@ public class SecurityConfig {
     private final String[] PUBLIC_URLS = {
             "/api/auth/**",
             "/api/files/**",
-            "/api/products"
+            "/api/products", "api/products/{id}"
     };
 
     private final String[] ADMIN_URLS = {

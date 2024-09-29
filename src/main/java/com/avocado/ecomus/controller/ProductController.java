@@ -2,6 +2,7 @@ package com.avocado.ecomus.controller;
 
 import com.avocado.ecomus.exception.BrandNotFoundException;
 import com.avocado.ecomus.exception.CategoryNotFoundException;
+import com.avocado.ecomus.exception.ProductNotFoundException;
 import com.avocado.ecomus.payload.req.AddProductRequest;
 import com.avocado.ecomus.payload.resp.BaseResp;
 import com.avocado.ecomus.service.ProductService;
@@ -38,6 +39,18 @@ public class ProductController {
         BaseResp resp = new BaseResp();
         resp.setData(productService.getAllProducts());
         resp.setMsg("All products success");
+        return new ResponseEntity<>(resp, HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getById(@PathVariable int id){
+        BaseResp resp = new BaseResp();
+        try {
+            resp.setData(productService.getProductById(id));
+        }catch (ProductNotFoundException e){
+            resp.setMsg(e.getMessage());
+            resp.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 }
