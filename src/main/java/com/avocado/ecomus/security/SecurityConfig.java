@@ -27,9 +27,18 @@ import java.util.List;
 @Configuration
 public class SecurityConfig {
 
-    private final String[] PUBLIC_URLS = {"/api/auth/**", "/api/files/**", "/api/products"};
+    private final String[] PUBLIC_URLS = {
+            "/api/auth/**",
+            "/api/files/**",
+            "/api/products"
+    };
 
-    private final String[] ADMIN_URLS = {"/api/products/add", "/api/variants/add"};
+    private final String[] ADMIN_URLS = {
+            "/api/products/add",
+            "/api/variants/add",
+            "/api/sizes/**",
+            "/api/colors/**"
+    };
 
     @Bean
     public PasswordEncoder passwordEncoder() {
