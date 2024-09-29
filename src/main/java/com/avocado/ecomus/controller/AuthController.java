@@ -1,9 +1,12 @@
 package com.avocado.ecomus.controller;
 
+import com.avocado.ecomus.exception.UserAlreadyExistException;
 import com.avocado.ecomus.exception.UserNotFoundException;
 import com.avocado.ecomus.jwt.JwtHelper;
 import com.avocado.ecomus.payload.req.AuthReq;
+import com.avocado.ecomus.payload.req.RegisterRequest;
 import com.avocado.ecomus.payload.resp.BaseResp;
+import com.avocado.ecomus.service.AuthService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +30,10 @@ public class AuthController {
     @Autowired
     private JwtHelper jwtHelper;
 
-    private ObjectMapper mapper = new ObjectMapper();
+    @Autowired
+    private AuthService authService;
+
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @PostMapping
     public ResponseEntity<?> login(@RequestBody AuthReq req){
@@ -51,6 +57,19 @@ public class AuthController {
             resp.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
             return new ResponseEntity<>(resp, HttpStatus.OK);
         }
+    }
 
+    @PostMapping("/register")
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request){
+        BaseResp resp = new BaseResp();
+
+        try {
+            authService.register(request);
+            resp.setMsg("Registration success");
+        }catch (UserAlreadyExistException e){
+            resp.setMsg(e.getMessage());
+            resp.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+        return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 }

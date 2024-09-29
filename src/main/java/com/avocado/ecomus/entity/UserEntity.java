@@ -33,7 +33,7 @@ public class UserEntity {
     @JoinColumn(name = "id_role")
     private RoleEntity role;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_address")
     private AddressEntity address;
 }

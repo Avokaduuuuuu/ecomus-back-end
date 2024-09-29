@@ -2,9 +2,15 @@ package com.avocado.ecomus.service.imp;
 
 import com.avocado.ecomus.dto.RoleDto;
 import com.avocado.ecomus.dto.UserDto;
+import com.avocado.ecomus.entity.AddressEntity;
 import com.avocado.ecomus.entity.UserEntity;
+import com.avocado.ecomus.enums.RoleEnum;
+import com.avocado.ecomus.exception.RoleNotFoundException;
+import com.avocado.ecomus.exception.UserAlreadyExistException;
 import com.avocado.ecomus.exception.UserNotFoundException;
 import com.avocado.ecomus.payload.req.AuthReq;
+import com.avocado.ecomus.payload.req.RegisterRequest;
+import com.avocado.ecomus.repository.RoleRepository;
 import com.avocado.ecomus.repository.UserRepository;
 import com.avocado.ecomus.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +28,9 @@ public class AuthServiceImp implements AuthService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Override
     public UserDto login(AuthReq req) {
@@ -47,5 +56,34 @@ public class AuthServiceImp implements AuthService {
                         .name(user.getRole().getName())
                         .build())
                 .build();
+    }
+
+    @Override
+    public void register(RegisterRequest request) {
+        if (userRepository.findByEmail(request.email()).isPresent()) {
+            throw new UserAlreadyExistException("User with email " + request.email() + " already exists");
+        }
+        UserEntity user = new UserEntity();
+        user.setEmail(request.email());
+        user.setPassword(passwordEncoder.encode(request.password()));
+        user.setFirstName(request.firstName());
+        user.setLastName(request.lastName());
+        user.setPhone(request.phone());
+        user.setRole(
+                roleRepository
+                        .findByName(RoleEnum.ROLE_USER.name())
+                        .orElseThrow(() -> new RoleNotFoundException("Role not found"))
+        );
+
+        AddressEntity addressEntity = new AddressEntity();
+        addressEntity.setCity(request.city().toUpperCase());
+        addressEntity.setWard(request.ward());
+        addressEntity.setDistrict(request.district());
+        addressEntity.setStreet(request.street());
+        addressEntity.setZip(request.zipcode());
+
+        user.setAddress(addressEntity);
+
+        userRepository.save(user);
     }
 }
