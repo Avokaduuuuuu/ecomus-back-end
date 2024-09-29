@@ -33,30 +33,34 @@ public class VariantServiceImp implements VariantService {
 
     @Override
     public void addVariant(AddVariantRequest request) {
-        VariantEntity variantEntity = new VariantEntity();
+        for (Integer size : request.idSize()){
+            VariantEntity variantEntity = new VariantEntity();
 
-        variantEntity.setImage(request.image().getOriginalFilename());
-        variantEntity.setQuantity(request.quantity());
+            variantEntity.setImage(request.image().getOriginalFilename());
+            variantEntity.setQuantity(request.quantity());
 
-        variantEntity.setProduct(
-                productRepository
-                        .findById(request.idProduct())
-                        .orElseThrow(() -> new ProductNotFoundException("Product not found"))
-        );
+            variantEntity.setProduct(
+                    productRepository
+                            .findById(request.idProduct())
+                            .orElseThrow(() -> new ProductNotFoundException("Product not found"))
+            );
 
-        variantEntity.setSize(
-                sizeRepository
-                        .findById(request.idSize())
-                        .orElseThrow(() -> new SizeNotFoundException("Size not found"))
-        );
+            variantEntity.setSize(
+                    sizeRepository
+                            .findById(size)
+                            .orElseThrow(() -> new SizeNotFoundException("Size not found"))
+            );
 
-        variantEntity.setColor(
-                colorRepository
-                        .findById(request.idColor())
-                        .orElseThrow(() -> new ColorNotFoundException("Color not found"))
-        );
+            variantEntity.setColor(
+                    colorRepository
+                            .findById(request.idColor())
+                            .orElseThrow(() -> new ColorNotFoundException("Color not found"))
+            );
+            variantRepository.save(variantEntity);
+        }
+
 
         fileService.save(request.image());
-        variantRepository.save(variantEntity);
+
     }
 }
