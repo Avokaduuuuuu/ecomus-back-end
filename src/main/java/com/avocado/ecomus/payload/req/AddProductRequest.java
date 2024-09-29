@@ -1,6 +1,5 @@
 package com.avocado.ecomus.payload.req;
 
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 

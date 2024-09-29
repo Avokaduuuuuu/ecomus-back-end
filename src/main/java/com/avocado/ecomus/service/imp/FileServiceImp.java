@@ -12,10 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.Objects;
 
 @Service
@@ -26,7 +23,7 @@ public class FileServiceImp implements FileService {
     @Override
     public void save(MultipartFile file) {
         try{
-            Files.copy(file.getInputStream(), root.resolve(Objects.requireNonNull(file.getOriginalFilename())));
+            Files.copy(file.getInputStream(), root.resolve(Objects.requireNonNull(file.getOriginalFilename())), StandardCopyOption.REPLACE_EXISTING);
         }catch (FileAlreadyExistsException e){
             throw new FileAlreadyExistException("File already exists");
         } catch (IOException e) {
