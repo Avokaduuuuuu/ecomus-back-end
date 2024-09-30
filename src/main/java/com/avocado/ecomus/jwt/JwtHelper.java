@@ -1,7 +1,7 @@
 package com.avocado.ecomus.jwt;
 
+import com.avocado.ecomus.global.Times;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwt;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -18,14 +18,13 @@ public class JwtHelper {
     @Value("${jwt.secret}")
     private String secret;
 
-    private final long expiration = 8 * 60 * 60 * 1000;
 
     public String generateToken(String subject) {
         return Jwts
                 .builder()
                 .subject(subject)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .expiration(new Date(System.currentTimeMillis() + Times.TOKEN_EXPIRATION))
                 .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret)))
                 .compact();
     }
@@ -36,7 +35,7 @@ public class JwtHelper {
                 .subject(subject)
                 .claims(claims)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .expiration(new Date(System.currentTimeMillis() + Times.TOKEN_EXPIRATION))
                 .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret)))
                 .compact();
     }
