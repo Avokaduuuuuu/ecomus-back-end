@@ -1,6 +1,6 @@
 package com.avocado.ecomus.service.imp;
 
-import com.avocado.ecomus.config.BaseUrl;
+import com.avocado.ecomus.global.BaseUrl;
 import com.avocado.ecomus.dto.ColorDto;
 import com.avocado.ecomus.dto.ProductDto;
 import com.avocado.ecomus.dto.SizeDto;
@@ -14,11 +14,9 @@ import com.avocado.ecomus.repository.CategoryRepository;
 import com.avocado.ecomus.repository.ProductRepository;
 import com.avocado.ecomus.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 

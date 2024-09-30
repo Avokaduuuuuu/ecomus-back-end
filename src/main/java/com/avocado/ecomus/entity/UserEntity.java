@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -36,4 +38,10 @@ public class UserEntity {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id_address")
     private AddressEntity address;
+
+    @Column(name = "active")
+    private boolean active;
+
+    @OneToMany(mappedBy = "user")
+    List<ConfirmationTokenEntity> confirmationTokens;
 }

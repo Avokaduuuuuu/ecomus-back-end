@@ -1,14 +1,16 @@
 package com.avocado.ecomus.controller;
 
-import com.avocado.ecomus.exception.UserAlreadyExistException;
-import com.avocado.ecomus.exception.UserNotFoundException;
+import com.avocado.ecomus.exception.*;
 import com.avocado.ecomus.jwt.JwtHelper;
 import com.avocado.ecomus.payload.req.AuthReq;
 import com.avocado.ecomus.payload.req.RegisterRequest;
 import com.avocado.ecomus.payload.resp.BaseResp;
 import com.avocado.ecomus.service.AuthService;
+import com.avocado.ecomus.service.ConfirmationTokenService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.mail.MessagingException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +37,9 @@ public class AuthController {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
+    @Autowired
+    private ConfirmationTokenService confirmationTokenService;
+
     @PostMapping
     public ResponseEntity<?> login(@RequestBody AuthReq req){
         BaseResp resp = new BaseResp();
@@ -48,7 +53,7 @@ public class AuthController {
             resp.setData(jwtHelper.generateToken(mapper.writeValueAsString(authorities)));
             resp.setMsg("Authentication success");
             return new ResponseEntity<>(resp, HttpStatus.OK);
-        } catch (BadCredentialsException | UserNotFoundException e){
+        } catch (BadCredentialsException | UserNotFoundException | UserNotVerifiedException e){
             resp.setMsg(e.getMessage());
             resp.setCode(HttpStatus.UNAUTHORIZED.value());
             return new ResponseEntity<>(resp, HttpStatus.OK);
@@ -60,13 +65,29 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @Transactional
     public ResponseEntity<?> register(@RequestBody RegisterRequest request){
         BaseResp resp = new BaseResp();
 
         try {
             authService.register(request);
             resp.setMsg("Registration success");
-        }catch (UserAlreadyExistException e){
+        }catch (UserAlreadyExistException | MessagingException e){
+            resp.setMsg(e.getMessage());
+            resp.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+        return new ResponseEntity<>(resp, HttpStatus.OK);
+    }
+
+    @PostMapping("/confirm/{token}")
+    public ResponseEntity<?> confirm(@PathVariable String token){
+        BaseResp resp = new BaseResp();
+        try {
+            confirmationTokenService.confirmToken(token);
+            resp.setMsg("Confirmation success");
+        }catch (
+                ConfirmationTokenExpirationException | ConfirmationTokenNotFoundException | TokenConfirmedException e
+         ){
             resp.setMsg(e.getMessage());
             resp.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
