@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity(name = "variant")
 @Data
 @AllArgsConstructor
@@ -33,4 +35,7 @@ public class VariantEntity {
     @ManyToOne
     @JoinColumn(name = "id_size")
     private SizeEntity size;
+
+    @OneToMany(mappedBy = "variantEntity")
+    private List<OrderVariant> orderVariants;
 }

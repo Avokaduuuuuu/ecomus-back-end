@@ -43,5 +43,8 @@ public class UserEntity {
     private boolean active;
 
     @OneToMany(mappedBy = "user")
-    List<ConfirmationTokenEntity> confirmationTokens;
+    private List<ConfirmationTokenEntity> confirmationTokens;
+
+    @OneToMany(mappedBy = "user")
+    private List<OrderEntity> orders;
 }
