@@ -2,6 +2,7 @@ package com.avocado.ecomus.filter;
 
 import com.avocado.ecomus.dto.AuthorityDto;
 import com.avocado.ecomus.jwt.JwtHelper;
+import com.avocado.ecomus.security.CustomUserDetails;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -51,9 +52,11 @@ public class JwtFilter extends OncePerRequestFilter {
                     .map(authorityDto -> new SimpleGrantedAuthority(authorityDto.getAuthority()))
                     .toList();
 
+            int userId = jwtHelper.parseClaims(token, claims -> claims.get("userId", Integer.class));
+
             SecurityContext context = SecurityContextHolder.getContext();
 
-            context.setAuthentication(new UsernamePasswordAuthenticationToken("", "", grantedAuthorities));
+            context.setAuthentication(new UsernamePasswordAuthenticationToken(userId, "", grantedAuthorities));
         }
 
         filterChain.doFilter(request, response);

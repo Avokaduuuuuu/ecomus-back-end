@@ -33,7 +33,8 @@ public class CustomAuthProvider implements AuthenticationProvider {
         List<GrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(user.getRole().getName()));
 
-        return new UsernamePasswordAuthenticationToken("", "", authorities);
+
+        return new UsernamePasswordAuthenticationToken(user.getId(), "", authorities);
     }
 
     @Override

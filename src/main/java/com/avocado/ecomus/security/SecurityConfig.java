@@ -42,6 +42,11 @@ public class SecurityConfig {
             "/api/colors/**"
     };
 
+    private final String[] USER_URLS = {
+            "/api/orders/user/{id}",
+    };
+
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -55,6 +60,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> {
                     request.requestMatchers(PUBLIC_URLS).permitAll();
                     request.requestMatchers(ADMIN_URLS).hasRole("ADMIN");
+                    request.requestMatchers(USER_URLS).hasAnyRole("USER", "ADMIN");
                     request.anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
