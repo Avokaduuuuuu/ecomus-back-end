@@ -1,20 +1,21 @@
 package com.avocado.ecomus.service.imp;
 
+import com.avocado.ecomus.dto.OrderDto;
+import com.avocado.ecomus.dto.StatusDto;
 import com.avocado.ecomus.entity.OrderEntity;
 import com.avocado.ecomus.entity.OrderVariant;
 import com.avocado.ecomus.enums.StatusEnum;
-import com.avocado.ecomus.exception.PaymentMethodNotFoundException;
-import com.avocado.ecomus.exception.StatusNotFoundException;
-import com.avocado.ecomus.exception.UserNotFoundException;
-import com.avocado.ecomus.exception.VariantNotFoundException;
+import com.avocado.ecomus.exception.*;
 import com.avocado.ecomus.payload.req.OrderRequest;
 import com.avocado.ecomus.payload.req.VariantRequest;
 import com.avocado.ecomus.repository.*;
 import com.avocado.ecomus.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class OrderRequestImp implements OrderService {
@@ -66,5 +67,30 @@ public class OrderRequestImp implements OrderService {
             orderVariant.setOrderEntity(savedOrder);
             orderVariantRepository.save(orderVariant);
         }
+    }
+
+    @Override
+    public List<OrderDto> getOrderByUserId(int id, int currentUser) {
+        if (id != currentUser) throw new RestrictException("User can not access these data");
+        return orderRepository
+                .findByUser_Id(id)
+                .stream()
+                .map(order ->
+                    OrderDto
+                            .builder()
+                            .id(order.getId())
+                            .orderDate(order.getCreateDate())
+                            .status(
+                                    StatusDto
+                                            .builder()
+                                            .id(order.getStatus().getId())
+                                            .status(order.getStatus().getName())
+                                            .build()
+                            )
+                            .total(order.getTotal())
+                            .totalItems(order.getOrderVariants().size())
+                            .build()
+                )
+                .toList();
     }
 }

@@ -5,6 +5,7 @@ import com.avocado.ecomus.jwt.JwtHelper;
 import com.avocado.ecomus.payload.req.AuthReq;
 import com.avocado.ecomus.payload.req.RegisterRequest;
 import com.avocado.ecomus.payload.resp.BaseResp;
+import com.avocado.ecomus.security.CustomUserDetails;
 import com.avocado.ecomus.service.AuthService;
 import com.avocado.ecomus.service.ConfirmationTokenService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -21,7 +22,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -50,7 +53,9 @@ public class AuthController {
                     new UsernamePasswordAuthenticationToken(req.email(), req.password())
             );
             List<GrantedAuthority> authorities = (List<GrantedAuthority>) authentication.getAuthorities();
-            resp.setData(jwtHelper.generateToken(mapper.writeValueAsString(authorities)));
+            HashMap<String, Object> userId = new HashMap<>();
+            userId.put("userId", authentication.getPrincipal());
+            resp.setData(jwtHelper.generateToken(mapper.writeValueAsString(authorities), userId));
             resp.setMsg("Authentication success");
             return new ResponseEntity<>(resp, HttpStatus.OK);
         } catch (BadCredentialsException | UserNotFoundException | UserNotVerifiedException e){
