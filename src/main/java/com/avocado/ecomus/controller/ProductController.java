@@ -53,4 +53,18 @@ public class ProductController {
         }
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
+
+    @PostMapping("/change/{id}")
+    public ResponseEntity<?> disable(@PathVariable int id){
+        BaseResp resp = new BaseResp();
+        try {
+            productService.changeProductStatus(id);
+            resp.setMsg("Product's availability successfully changed");
+        }catch (ProductNotFoundException e){
+            resp.setMsg(e.getMessage());
+            resp.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+
+        return new ResponseEntity<>(resp, HttpStatus.OK);
+    }
 }

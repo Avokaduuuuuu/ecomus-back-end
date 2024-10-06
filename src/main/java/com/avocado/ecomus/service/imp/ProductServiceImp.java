@@ -57,6 +57,7 @@ public class ProductServiceImp implements ProductService {
                     );
                 });
         productEntity.setCreateDate(LocalDate.now());
+        productEntity.setAvailable(true);
         productRepository.save(productEntity);
     }
 
@@ -65,6 +66,7 @@ public class ProductServiceImp implements ProductService {
         return productRepository
                 .findAll(PageRequest.of(page, 10))
                 .stream()
+                .filter(ProductEntity::isAvailable)
                 .map(ProductMapper::mapProductDto)
                 .toList();
     }
@@ -74,6 +76,7 @@ public class ProductServiceImp implements ProductService {
         return productRepository
                 .findAll()
                 .stream()
+                .filter(ProductEntity::isAvailable)
                 .map(ProductMapper::mapProductDto)
                 .toList();
     }
@@ -90,5 +93,16 @@ public class ProductServiceImp implements ProductService {
             throw new ProductNotFoundException("Product with id " + id + " not found");
         }
         return productDto;
+    }
+
+    @Override
+    public void changeProductStatus(int id) {
+        ProductEntity productEntity = productRepository
+                .findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product with id " + id + " not found"));
+
+        productEntity.setAvailable(!productEntity.isAvailable());
+
+        productRepository.save(productEntity);
     }
 }

@@ -17,6 +17,7 @@ public class ProductDto {
     private String name;
     private double price;
     private String description;
+    private boolean available;
     private Set<SizeDto> sizes;
     private List<String> categories;
     private Set<ColorDto> colors;
