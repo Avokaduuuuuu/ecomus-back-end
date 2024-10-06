@@ -8,12 +8,14 @@ import com.avocado.ecomus.entity.ProductEntity;
 import com.avocado.ecomus.exception.BrandNotFoundException;
 import com.avocado.ecomus.exception.CategoryNotFoundException;
 import com.avocado.ecomus.exception.ProductNotFoundException;
+import com.avocado.ecomus.mapper.ProductMapper;
 import com.avocado.ecomus.payload.req.AddProductRequest;
 import com.avocado.ecomus.repository.BrandRepository;
 import com.avocado.ecomus.repository.CategoryRepository;
 import com.avocado.ecomus.repository.ProductRepository;
 import com.avocado.ecomus.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -59,66 +61,20 @@ public class ProductServiceImp implements ProductService {
     }
 
     @Override
+    public List<ProductDto> getAllProducts(int page) {
+        return productRepository
+                .findAll(PageRequest.of(page, 10))
+                .stream()
+                .map(ProductMapper::mapProductDto)
+                .toList();
+    }
+
+    @Override
     public List<ProductDto> getAllProducts() {
         return productRepository
                 .findAll()
                 .stream()
-                .map(product -> {
-                    ProductDto productDto = new ProductDto();
-                    productDto.setId(product.getId());
-                    productDto.setName(product.getName());
-                    productDto.setPrice(product.getPrice());
-                    productDto.setDescription(product.getDescription());
-                    productDto.setSizes(product
-                            .getVariants()
-                            .stream()
-                            .map(
-                                    variant ->
-                                            SizeDto
-                                                .builder()
-                                                .id(variant.getSize().getId())
-                                                .name(variant.getSize().getName())
-                                                .build())
-                            .collect(Collectors.toSet())
-                    );
-                    productDto.setCategories(
-                            product
-                                .getProductCategories()
-                                .stream()
-                                .map(productCategory -> productCategory.getCategory().getName())
-                                .toList()
-                    );
-
-                    productDto.setColors(
-                            product
-                                    .getVariants()
-                                    .stream()
-                                    .map(variant -> {
-                                        ColorDto colorDto = new ColorDto();
-                                        colorDto.setId(variant.getColor().getId());
-                                        colorDto.setName(variant.getColor().getName());
-                                        colorDto.setImage(BaseUrl.BASE_URL + "/files/" + variant.getImage());
-                                        colorDto.setSizes(
-                                                product
-                                                        .getVariants()
-                                                        .stream()
-                                                        .map(variantEntity -> {
-                                                            SizeDto sizeDto = null;
-                                                            if (colorDto.getId() == variantEntity.getColor().getId()) {
-                                                                sizeDto = new SizeDto();
-                                                                sizeDto.setId(variantEntity.getSize().getId());
-                                                                sizeDto.setName(variantEntity.getSize().getName());
-                                                                sizeDto.setQuantity(variantEntity.getQuantity());
-                                                            }
-                                                            return sizeDto;
-                                                        })
-                                                        .toList()
-                                        );
-                                        return colorDto;
-                                    }).collect(Collectors.toSet())
-                    );
-                    return productDto;
-                })
+                .map(ProductMapper::mapProductDto)
                 .toList();
     }
 

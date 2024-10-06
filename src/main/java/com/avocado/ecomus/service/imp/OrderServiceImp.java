@@ -6,19 +6,19 @@ import com.avocado.ecomus.entity.OrderEntity;
 import com.avocado.ecomus.entity.OrderVariant;
 import com.avocado.ecomus.enums.StatusEnum;
 import com.avocado.ecomus.exception.*;
+import com.avocado.ecomus.mapper.OrderMapper;
 import com.avocado.ecomus.payload.req.OrderRequest;
 import com.avocado.ecomus.payload.req.VariantRequest;
 import com.avocado.ecomus.repository.*;
 import com.avocado.ecomus.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Service
-public class OrderRequestImp implements OrderService {
+public class OrderServiceImp implements OrderService {
     @Autowired
     private OrderRepository orderRepository;
     @Autowired
@@ -75,22 +75,31 @@ public class OrderRequestImp implements OrderService {
         return orderRepository
                 .findByUser_Id(id)
                 .stream()
-                .map(order ->
-                    OrderDto
-                            .builder()
-                            .id(order.getId())
-                            .orderDate(order.getCreateDate())
-                            .status(
-                                    StatusDto
-                                            .builder()
-                                            .id(order.getStatus().getId())
-                                            .status(order.getStatus().getName())
-                                            .build()
-                            )
-                            .total(order.getTotal())
-                            .totalItems(order.getOrderVariants().size())
-                            .build()
-                )
+                .map(OrderMapper::mapToOrderDto)
                 .toList();
+    }
+
+    @Override
+    public List<OrderDto> getAllOrders() {
+        return orderRepository
+                .findAll()
+                .stream()
+                .map(OrderMapper::mapToOrderDto)
+                .toList();
+    }
+
+    @Override
+    public void acceptOrder(int orderId) {
+        OrderEntity orderEntity = orderRepository
+                .findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+
+        orderEntity.setStatus(
+                statusRepository
+                        .findByName(StatusEnum.PACKAGING.name())
+                        .orElseThrow(() -> new StatusNotFoundException("Status not found"))
+        );
+
+        orderRepository.save(orderEntity);
     }
 }

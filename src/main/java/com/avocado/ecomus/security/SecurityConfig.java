@@ -39,7 +39,9 @@ public class SecurityConfig {
             "/api/products/add",
             "/api/variants/add",
             "/api/sizes/**",
-            "/api/colors/**"
+            "/api/colors/**",
+            "/api/orders", "/api/orders/accept/{id}",
+            "/api/status"
     };
 
     private final String[] USER_URLS = {
