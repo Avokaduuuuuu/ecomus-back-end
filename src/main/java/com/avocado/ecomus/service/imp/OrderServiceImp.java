@@ -102,4 +102,14 @@ public class OrderServiceImp implements OrderService {
 
         orderRepository.save(orderEntity);
     }
+
+    @Override
+    public OrderDto getOrderById(int orderId) {
+        return orderRepository
+                .findById(orderId)
+                .stream()
+                .findFirst()
+                .map(OrderMapper::mapToOrderDto)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+    }
 }

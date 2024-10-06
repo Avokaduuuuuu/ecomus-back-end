@@ -11,4 +11,5 @@ public interface OrderService {
     List<OrderDto> getOrderByUserId(int id, int currentUser);
     List<OrderDto> getAllOrders();
     void acceptOrder(int orderId);
+    OrderDto getOrderById(int orderId);
 }

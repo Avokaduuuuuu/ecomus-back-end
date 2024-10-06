@@ -63,4 +63,18 @@ public class OrderController {
         }
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getOrderById(@PathVariable int id){
+        BaseResp resp = new BaseResp();
+        try {
+            resp.setData(orderService.getOrderById(id));
+            resp.setMsg("Fetch Order by Id: " + id);
+        }catch (OrderNotFoundException e){
+            resp.setMsg(e.getMessage());
+            resp.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+
+        return new ResponseEntity<>(resp, HttpStatus.OK);
+    }
 }

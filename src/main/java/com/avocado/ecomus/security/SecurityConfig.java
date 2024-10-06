@@ -40,12 +40,13 @@ public class SecurityConfig {
             "/api/variants/add",
             "/api/sizes/**",
             "/api/colors/**",
-            "/api/orders", "/api/orders/accept/{id}",
+            "/api/orders", "/api/orders/accept/{id}", "/api/orders/{id}",
             "/api/status"
     };
 
     private final String[] USER_URLS = {
             "/api/orders/user/{id}",
+
     };
 
 
