@@ -12,4 +12,5 @@ public interface ProductService {
     List<ProductDto> getAllProducts(int page);
     List<ProductDto> getAllProducts();
     ProductDto getProductById(int id);
+    void changeProductStatus(int id);
 }

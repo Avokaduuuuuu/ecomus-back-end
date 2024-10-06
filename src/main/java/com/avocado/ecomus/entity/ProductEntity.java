@@ -34,6 +34,9 @@ public class ProductEntity {
     @Column(name = "sale")
     private double sale = 0;
 
+    @Column(name = "available")
+    private boolean available;
+
     @ManyToOne
     @JoinColumn(name = "id_brand")
     private BrandEntity brand;
