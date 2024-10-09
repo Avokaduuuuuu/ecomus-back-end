@@ -1,6 +1,10 @@
 package com.avocado.ecomus.service.imp;
 
 import com.avocado.ecomus.dto.CategoryDto;
+import com.avocado.ecomus.entity.CategoryEntity;
+import com.avocado.ecomus.exception.CategoryAlreadyExistsException;
+import com.avocado.ecomus.exception.InvalidInputException;
+import com.avocado.ecomus.payload.req.AddCategoryRequest;
 import com.avocado.ecomus.repository.CategoryRepository;
 import com.avocado.ecomus.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,5 +30,21 @@ public class CategoryServiceImp implements CategoryService {
                         .build()
                 )
                 .toList();
+    }
+
+    @Override
+    public void addCategory(AddCategoryRequest request) {
+        categoryRepository
+                .findByName(request.name())
+                .ifPresent(category -> {
+                    throw new CategoryAlreadyExistsException("Category already exists");
+                });
+
+        if (request.name().isEmpty()) throw new InvalidInputException("Category must not be empty");
+        if (!request.name().chars().allMatch(ch -> Character.isAlphabetic(ch) || Character.isWhitespace(ch))) throw new InvalidInputException("Category must contain letter");
+
+        categoryRepository.save(
+                CategoryEntity.builder().name(request.name()).build()
+        );
     }
 }
