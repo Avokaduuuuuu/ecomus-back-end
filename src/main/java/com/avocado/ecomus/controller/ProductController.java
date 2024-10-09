@@ -7,6 +7,7 @@ import com.avocado.ecomus.payload.req.AddProductRequest;
 import com.avocado.ecomus.payload.resp.BaseResp;
 import com.avocado.ecomus.service.ProductService;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,7 @@ public class ProductController {
 
     @PostMapping("/add")
     @Transactional
-    public ResponseEntity<?> add(@RequestBody AddProductRequest request){
+    public ResponseEntity<?> add(@RequestBody @Valid AddProductRequest request){
         BaseResp resp = new BaseResp();
         try {
             productService.addProduct(request);

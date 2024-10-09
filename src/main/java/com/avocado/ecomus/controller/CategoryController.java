@@ -5,6 +5,7 @@ import com.avocado.ecomus.exception.InvalidInputException;
 import com.avocado.ecomus.payload.req.AddCategoryRequest;
 import com.avocado.ecomus.payload.resp.BaseResp;
 import com.avocado.ecomus.service.CategoryService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,15 +27,15 @@ public class CategoryController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<?> addCategory(@RequestBody AddCategoryRequest request){
+    public ResponseEntity<?> addCategory(@RequestBody @Valid AddCategoryRequest request){
         BaseResp resp = new BaseResp();
 
         try {
             categoryService.addCategory(request);
             resp.setMsg("Add Category Successfully");
-        }catch (CategoryAlreadyExistsException | InvalidInputException e){
+        }catch (CategoryAlreadyExistsException e){
             resp.setMsg(e.getMessage());
-            resp.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            resp.setCode(HttpStatus.BAD_REQUEST.value());
         }
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
