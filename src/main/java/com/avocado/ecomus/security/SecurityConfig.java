@@ -32,7 +32,8 @@ public class SecurityConfig {
             "/api/files/**",
             "/api/products", "api/products/{id}",
             "/api/brands",
-            "/api/orders/create"
+            "/api/orders/create",
+            "/api/categories"
     };
 
     private final String[] ADMIN_URLS = {
