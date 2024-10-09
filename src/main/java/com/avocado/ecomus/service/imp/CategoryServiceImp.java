@@ -40,8 +40,6 @@ public class CategoryServiceImp implements CategoryService {
                     throw new CategoryAlreadyExistsException("Category already exists");
                 });
 
-        if (request.name().isEmpty()) throw new InvalidInputException("Category must not be empty");
-        if (!request.name().chars().allMatch(ch -> Character.isAlphabetic(ch) || Character.isWhitespace(ch))) throw new InvalidInputException("Category must contain letter");
 
         categoryRepository.save(
                 CategoryEntity.builder().name(request.name()).build()

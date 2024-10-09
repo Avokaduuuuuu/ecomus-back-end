@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -44,7 +47,7 @@ public class AuthController {
     private ConfirmationTokenService confirmationTokenService;
 
     @PostMapping
-    public ResponseEntity<?> login(@RequestBody AuthReq req){
+    public ResponseEntity<?> login(@RequestBody @Valid AuthReq req){
         BaseResp resp = new BaseResp();
 
 
@@ -71,7 +74,7 @@ public class AuthController {
 
     @PostMapping("/register")
     @Transactional
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request){
+    public ResponseEntity<?> register(@RequestBody @Valid RegisterRequest request){
         BaseResp resp = new BaseResp();
 
         try {
@@ -98,4 +101,6 @@ public class AuthController {
         }
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
+
+
 }

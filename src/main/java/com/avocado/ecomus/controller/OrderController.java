@@ -4,6 +4,7 @@ import com.avocado.ecomus.exception.*;
 import com.avocado.ecomus.payload.req.OrderRequest;
 import com.avocado.ecomus.payload.resp.BaseResp;
 import com.avocado.ecomus.service.OrderService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> createOrder(@RequestBody OrderRequest request){
+    public ResponseEntity<?> createOrder(@RequestBody @Valid OrderRequest request){
         BaseResp resp = new BaseResp();
         try {
             orderService.addOrder(request);

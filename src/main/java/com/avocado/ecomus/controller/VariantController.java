@@ -7,6 +7,7 @@ import com.avocado.ecomus.payload.req.AddVariantRequest;
 import com.avocado.ecomus.payload.resp.BaseResp;
 import com.avocado.ecomus.service.VariantService;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class VariantController {
 
     @PostMapping("/add")
     @Transactional
-    public ResponseEntity<?> addVariant(AddVariantRequest request){
+    public ResponseEntity<?> addVariant(@Valid AddVariantRequest request){
         BaseResp resp = new BaseResp();
 
         try {
