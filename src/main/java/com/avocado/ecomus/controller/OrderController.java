@@ -4,7 +4,9 @@ import com.avocado.ecomus.exception.*;
 import com.avocado.ecomus.payload.req.OrderRequest;
 import com.avocado.ecomus.payload.resp.BaseResp;
 import com.avocado.ecomus.service.OrderService;
+import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +26,8 @@ public class OrderController {
         try {
             orderService.addOrder(request);
             resp.setMsg("Add order successfully");
-        }catch (UserNotFoundException | StatusNotFoundException | PaymentMethodNotFoundException | VariantNotFoundException e){
+        }catch (UserNotFoundException | StatusNotFoundException | PaymentMethodNotFoundException |
+                VariantNotFoundException | MessagingException e){
             resp.setMsg(e.getMessage());
             resp.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
@@ -58,10 +61,24 @@ public class OrderController {
         try {
             orderService.acceptOrder(id);
             resp.setMsg("Accept Order successfully");
-        }catch (OrderNotFoundException | StatusNotFoundException e){
+        }catch (OrderNotFoundException | StatusNotFoundException | MessagingException e){
             resp.setMsg(e.getMessage());
             resp.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
+        return new ResponseEntity<>(resp, HttpStatus.OK);
+    }
+
+    @PostMapping("/deliver/{id}")
+    public ResponseEntity<?> deliverOrder(@PathVariable int id){
+        BaseResp resp = new BaseResp();
+        try {
+            orderService.sendForDelivery(id);
+            resp.setMsg("Deliver order successfully");
+        }catch (OrderNotFoundException | StatusNotFoundException | MessagingException e){
+            resp.setMsg(e.getMessage());
+            resp.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
@@ -78,4 +95,5 @@ public class OrderController {
 
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
+
 }

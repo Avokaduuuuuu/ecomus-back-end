@@ -16,6 +16,7 @@ import com.avocado.ecomus.repository.UserRepository;
 import com.avocado.ecomus.service.AuthService;
 import com.avocado.ecomus.service.ConfirmationTokenService;
 import com.avocado.ecomus.service.EmailService;
+import com.avocado.ecomus.service.TemplateService;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -42,6 +43,9 @@ public class AuthServiceImp implements AuthService {
 
     @Autowired
     private EmailService emailService;
+
+    @Autowired
+    private TemplateService templateService;
 
     @Override
     public UserDto login(AuthReq req) {
@@ -108,11 +112,6 @@ public class AuthServiceImp implements AuthService {
         emailDetail.setReceipient(savedUser.getEmail());
         emailDetail.setMsgSubject("Ecomus Account Verification");
 
-        Context context = new Context();
-        context.setVariable("firstName", savedUser.getFirstName());
-        context.setVariable("lastName", savedUser.getLastName());
-        context.setVariable("token", token);
-
-        emailService.sendVerificationEmail(emailDetail, "SendTokenTemplate.html", context);
+        templateService.tokenTemplate(emailDetail, savedUser, token);
     }
 }
