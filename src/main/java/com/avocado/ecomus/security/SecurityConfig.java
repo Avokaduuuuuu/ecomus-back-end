@@ -41,7 +41,7 @@ public class SecurityConfig {
             "/api/variants/add",
             "/api/sizes/**",
             "/api/colors/**",
-            "/api/orders", "/api/orders/accept/{id}", "/api/orders/{id}",
+            "/api/orders", "/api/orders/accept/{id}", "/api/orders/{id}", "api/orders/deliver{id}",
             "/api/status",
             "/api/categories/add"
     };

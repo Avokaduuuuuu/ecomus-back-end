@@ -33,4 +33,9 @@ public class AddressEntity {
 
     @OneToMany(mappedBy = "address")
     private List<UserEntity> user;
+
+    @Override
+    public String toString() {
+        return street + " " + zip + " " + city + " " + district + " " + ward;
+    }
 }

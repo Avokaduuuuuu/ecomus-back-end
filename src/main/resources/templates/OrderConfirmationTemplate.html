@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Order Confirmation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f4;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+    }
+    .footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Order Confirmation</h1>
+  <p>Dear <span th:text="${customerName}">Customer</span>,</p>
+  <p>Thank you for your order! We're excited to let you know that your order <strong><span th:text="${orderId}">#12345</span></strong> has been received and is being processed.</p>
+
+  <h2>Order Details:</h2>
+  <ul>
+    <li>Order ID: <span th:text="${orderId}">#12345</span></li>
+    <li>Order Date: <span th:text="${orderDate}">Date</span></li>
+    <li>Total Amount: <span th:text="${totalAmount}">$0.00</span></li>
+  </ul>
+
+  <h2>Shipping Information:</h2>
+  <p>
+    <strong>Recipient:</strong> <span th:text="${recipientName}">Recipient Name</span><br>
+    <strong>Address:</strong> <span th:text="${shippingAddress}">Shipping Address</span>
+  </p>
+
+  <p>If you have any questions about your order, feel free to reach out to our support team.</p>
+
+  <p>Thank you for shopping with us!</p>
+
+  <div class="footer">
+    <p>Best regards,<br>Your Company Name</p>
+  </div>
+</div>
+</body>
+</html>
