@@ -33,7 +33,8 @@ public class SecurityConfig {
             "/api/products", "api/products/{id}",
             "/api/brands",
             "/api/orders/create",
-            "/api/categories"
+            "/api/categories",
+
     };
 
     private final String[] ADMIN_URLS = {
@@ -41,14 +42,13 @@ public class SecurityConfig {
             "/api/variants/add",
             "/api/sizes/**",
             "/api/colors/**",
-            "/api/orders", "/api/orders/accept/{id}", "/api/orders/{id}", "api/orders/deliver{id}",
+            "/api/orders", "/api/orders/accept/{id}", "/api/orders/{id}", "api/orders/deliver{id}", "/api/orders/user/{id}",
             "/api/status",
-            "/api/categories/add"
+            "/api/categories/add",
     };
 
     private final String[] USER_URLS = {
-            "/api/orders/user/{id}",
-
+            "/api/orders/user/{id}", "/api/orders/cancel"
     };
 
 
@@ -64,8 +64,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> {
                     request.requestMatchers(PUBLIC_URLS).permitAll();
-                    request.requestMatchers(ADMIN_URLS).hasRole("ADMIN");
                     request.requestMatchers(USER_URLS).hasAnyRole("USER", "ADMIN");
+                    request.requestMatchers(ADMIN_URLS).hasRole("ADMIN");
                     request.anyRequest().authenticated();
                 })
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

@@ -1,6 +1,7 @@
 package com.avocado.ecomus.controller;
 
 import com.avocado.ecomus.exception.*;
+import com.avocado.ecomus.payload.req.CancelOrderRequest;
 import com.avocado.ecomus.payload.req.OrderRequest;
 import com.avocado.ecomus.payload.resp.BaseResp;
 import com.avocado.ecomus.service.OrderService;
@@ -89,6 +90,20 @@ public class OrderController {
             resp.setData(orderService.getOrderById(id));
             resp.setMsg("Fetch Order by Id: " + id);
         }catch (OrderNotFoundException e){
+            resp.setMsg(e.getMessage());
+            resp.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+
+        return new ResponseEntity<>(resp, HttpStatus.OK);
+    }
+
+    @PostMapping("/cancel")
+    public ResponseEntity<?> cancelOrder(@Valid CancelOrderRequest request, @AuthenticationPrincipal Integer userId){
+        BaseResp resp = new BaseResp();
+        try {
+            orderService.cancelOrder(request, userId);
+            resp.setMsg("Cancel order successfully");
+        }catch (OrderNotFoundException | StatusNotFoundException | OrderUnableCancelException | RestrictException e){
             resp.setMsg(e.getMessage());
             resp.setCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
