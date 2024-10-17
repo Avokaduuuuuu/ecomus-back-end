@@ -6,6 +6,7 @@ import com.avocado.ecomus.entity.*;
 import com.avocado.ecomus.enums.StatusEnum;
 import com.avocado.ecomus.exception.*;
 import com.avocado.ecomus.mapper.OrderMapper;
+import com.avocado.ecomus.payload.req.CancelOrderRequest;
 import com.avocado.ecomus.payload.req.OrderRequest;
 import com.avocado.ecomus.payload.req.VariantRequest;
 import com.avocado.ecomus.repository.*;
@@ -151,5 +152,32 @@ public class OrderServiceImp implements OrderService {
                 .findFirst()
                 .map(OrderMapper::mapToOrderDto)
                 .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+    }
+
+    @Override
+    public void cancelOrder(CancelOrderRequest request, int currentUser) {
+        OrderEntity orderEntity = orderRepository
+                .findById(request.id())
+                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+
+        if (orderEntity.getUser().getId() != currentUser) throw new RestrictException("User can not access these data");
+
+        if (
+                !orderEntity.getStatus().getName().equals(StatusEnum.WAITING.name())
+                && !orderEntity.getStatus().getName().equals(StatusEnum.PACKAGING.name())
+                && !orderEntity.getStatus().getName().equals(StatusEnum.PENDING.name())
+                && !orderEntity.getStatus().getName().equals(StatusEnum.PAID.name())
+        ) {
+            System.out.println("Here 11");
+            throw new OrderUnableCancelException("Order can not be cancelled");
+        }
+        System.out.println("Here 22");
+        orderEntity.setStatus(
+                statusRepository
+                        .findByName(StatusEnum.CANCELLED.name())
+                        .orElseThrow(() -> new StatusNotFoundException("Status not found"))
+        );
+
+        orderRepository.save(orderEntity);
     }
 }
