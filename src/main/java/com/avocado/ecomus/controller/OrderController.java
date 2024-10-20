@@ -6,6 +6,7 @@ import com.avocado.ecomus.payload.req.OrderRequest;
 import com.avocado.ecomus.payload.resp.BaseResp;
 import com.avocado.ecomus.service.OrderService;
 import jakarta.mail.MessagingException;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping("/create")
+    @Transactional
     public ResponseEntity<?> createOrder(@RequestBody @Valid OrderRequest request){
         BaseResp resp = new BaseResp();
         try {

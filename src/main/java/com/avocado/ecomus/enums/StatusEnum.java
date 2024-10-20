@@ -8,5 +8,8 @@ public enum StatusEnum {
     SHIPPING,
     FINISHED,
     DENIED,
-    CANCELLED
+    CANCELLED,
+    NOT_PICKUP,
+    PICKED_UP,
+    DELIVERED
 }

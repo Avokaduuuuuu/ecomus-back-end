@@ -21,4 +21,7 @@ public class StatusEntity {
 
     @OneToMany(mappedBy = "status")
     private List<OrderEntity> orders;
+
+    @OneToMany(mappedBy = "status")
+    private List<ShipmentEntity> shipments;
 }

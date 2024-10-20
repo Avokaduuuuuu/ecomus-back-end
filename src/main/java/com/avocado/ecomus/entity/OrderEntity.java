@@ -40,4 +40,8 @@ public class OrderEntity {
 
     @OneToMany(mappedBy = "orderEntity")
     private List<OrderVariant> orderVariants;
+
+    @OneToOne
+    @JoinColumn(name = "tracking_number")
+    private ShipmentEntity shipment;
 }
