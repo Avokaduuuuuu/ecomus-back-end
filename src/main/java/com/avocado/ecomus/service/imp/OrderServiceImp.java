@@ -23,20 +23,25 @@ import java.util.List;
 
 @Service
 public class OrderServiceImp implements OrderService {
-    @Autowired
-    private OrderRepository orderRepository;
-    @Autowired
-    private OrderVariantRepository orderVariantRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private StatusRepository statusRepository;
-    @Autowired
-    private PaymentMethodRepository paymentMethodRepository;
-    @Autowired
-    private VariantRepository variantRepository;
-    @Autowired
-    private TemplateService templateService;
+    private final OrderRepository orderRepository;
+    private final OrderVariantRepository orderVariantRepository;
+    private final UserRepository userRepository;
+    private final StatusRepository statusRepository;
+    private final PaymentMethodRepository paymentMethodRepository;
+    private final VariantRepository variantRepository;
+    private final TemplateService templateService;
+    private final ShipmentRepository shipmentRepository;
+
+    public OrderServiceImp(OrderRepository orderRepository, OrderVariantRepository orderVariantRepository, UserRepository userRepository, StatusRepository statusRepository, PaymentMethodRepository paymentMethodRepository, VariantRepository variantRepository, TemplateService templateService, ShipmentRepository shipmentRepository) {
+        this.orderRepository = orderRepository;
+        this.orderVariantRepository = orderVariantRepository;
+        this.userRepository = userRepository;
+        this.statusRepository = statusRepository;
+        this.paymentMethodRepository = paymentMethodRepository;
+        this.variantRepository = variantRepository;
+        this.templateService = templateService;
+        this.shipmentRepository = shipmentRepository;
+    }
 
     @Override
     public void addOrder(OrderRequest request) throws MessagingException {
@@ -58,6 +63,28 @@ public class OrderServiceImp implements OrderService {
         );
         orderEntity.setTotal(request.total());
         orderEntity.setCreateDate(LocalDate.now());
+        orderEntity.setShipment(
+                shipmentRepository.save(
+                        ShipmentEntity
+                                .builder()
+                                .firstName(request.firstName())
+                                .lastName(request.lastName())
+                                .email(request.email())
+                                .phone(request.phone())
+                                .city(request.city())
+                                .district(request.district())
+                                .ward(request.ward())
+                                .street(request.street())
+                                .zipcode(request.zipcode())
+                                .shippingFee(request.shippingFee())
+                                .status(
+                                        statusRepository
+                                                .findByName(StatusEnum.NOT_PICKUP.name())
+                                                .orElseThrow(() -> new StatusNotFoundException("Status not found"))
+                                )
+                                .build()
+                )
+        );
         OrderEntity savedOrder = orderRepository.save(orderEntity);
 
         for (VariantRequest variantRequest : request.variantRequests()) {
@@ -74,6 +101,8 @@ public class OrderServiceImp implements OrderService {
             orderVariant.setOrderEntity(savedOrder);
             orderVariantRepository.save(orderVariant);
         }
+
+
 
         EmailDetail emailDetail = new EmailDetail();
         emailDetail.setReceipient(user.getEmail());
@@ -168,10 +197,8 @@ public class OrderServiceImp implements OrderService {
                 && !orderEntity.getStatus().getName().equals(StatusEnum.PENDING.name())
                 && !orderEntity.getStatus().getName().equals(StatusEnum.PAID.name())
         ) {
-            System.out.println("Here 11");
             throw new OrderUnableCancelException("Order can not be cancelled");
         }
-        System.out.println("Here 22");
         orderEntity.setStatus(
                 statusRepository
                         .findByName(StatusEnum.CANCELLED.name())
