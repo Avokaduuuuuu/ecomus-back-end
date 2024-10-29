@@ -48,7 +48,8 @@ public class SecurityConfig {
     };
 
     private final String[] USER_URLS = {
-            "/api/orders/user/{id}", "/api/orders/cancel"
+            "/api/orders/user/{id}", "/api/orders/cancel",
+            "/api/payment_information/add/{id}"
     };
 
 
@@ -63,10 +64,9 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> {
-                    request.requestMatchers(PUBLIC_URLS).permitAll();
                     request.requestMatchers(USER_URLS).hasAnyRole("USER", "ADMIN");
                     request.requestMatchers(ADMIN_URLS).hasRole("ADMIN");
-                    request.anyRequest().authenticated();
+                    request.requestMatchers(PUBLIC_URLS).permitAll();
                 })
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
