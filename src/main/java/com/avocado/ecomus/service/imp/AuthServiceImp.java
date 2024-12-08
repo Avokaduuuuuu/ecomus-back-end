@@ -13,11 +13,10 @@ import com.avocado.ecomus.payload.req.AuthReq;
 import com.avocado.ecomus.payload.req.RegisterRequest;
 import com.avocado.ecomus.repository.RoleRepository;
 import com.avocado.ecomus.repository.UserRepository;
-import com.avocado.ecomus.service.AuthService;
-import com.avocado.ecomus.service.ConfirmationTokenService;
-import com.avocado.ecomus.service.EmailService;
-import com.avocado.ecomus.service.TemplateService;
+import com.avocado.ecomus.service.*;
+import com.avocado.ecomus.tools.EmailBodyCreation;
 import jakarta.mail.MessagingException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,25 +26,13 @@ import org.thymeleaf.context.Context;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImp implements AuthService {
-
-    @Autowired
     private UserRepository userRepository;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
-
-    @Autowired
     private RoleRepository roleRepository;
-
-    @Autowired
     private ConfirmationTokenService confirmationTokenService;
-
-    @Autowired
-    private EmailService emailService;
-
-    @Autowired
-    private TemplateService templateService;
+    private NotificationService notificationService;
 
     @Override
     public UserDto login(AuthReq req) {
@@ -109,9 +96,10 @@ public class AuthServiceImp implements AuthService {
         String token = confirmationTokenService.generateToken(savedUser);
 
         EmailDetail emailDetail = new EmailDetail();
-        emailDetail.setReceipient(savedUser.getEmail());
-        emailDetail.setMsgSubject("Ecomus Account Verification");
+        emailDetail.setTo(savedUser.getEmail());
+        emailDetail.setSubject("Ecomus Account Verification");
+        emailDetail.setBody(EmailBodyCreation.create(savedUser.getFirstName(),savedUser.getLastName(),token));
 
-        templateService.tokenTemplate(emailDetail, savedUser, token);
+        notificationService.sendVerificationTemplate(emailDetail);
     }
 }

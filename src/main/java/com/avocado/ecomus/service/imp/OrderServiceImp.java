@@ -1,7 +1,6 @@
 package com.avocado.ecomus.service.imp;
 
 import com.avocado.ecomus.dto.OrderDto;
-import com.avocado.ecomus.dto.StatusDto;
 import com.avocado.ecomus.entity.*;
 import com.avocado.ecomus.enums.StatusEnum;
 import com.avocado.ecomus.exception.*;
@@ -10,18 +9,18 @@ import com.avocado.ecomus.payload.req.CancelOrderRequest;
 import com.avocado.ecomus.payload.req.OrderRequest;
 import com.avocado.ecomus.payload.req.VariantRequest;
 import com.avocado.ecomus.repository.*;
-import com.avocado.ecomus.service.EmailService;
+import com.avocado.ecomus.service.NotificationService;
 import com.avocado.ecomus.service.OrderService;
-import com.avocado.ecomus.service.TemplateService;
+import com.avocado.ecomus.tools.EmailBodyCreation;
 import jakarta.mail.MessagingException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.context.Context;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class OrderServiceImp implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderVariantRepository orderVariantRepository;
@@ -29,19 +28,8 @@ public class OrderServiceImp implements OrderService {
     private final StatusRepository statusRepository;
     private final PaymentMethodRepository paymentMethodRepository;
     private final VariantRepository variantRepository;
-    private final TemplateService templateService;
     private final ShipmentRepository shipmentRepository;
-
-    public OrderServiceImp(OrderRepository orderRepository, OrderVariantRepository orderVariantRepository, UserRepository userRepository, StatusRepository statusRepository, PaymentMethodRepository paymentMethodRepository, VariantRepository variantRepository, TemplateService templateService, ShipmentRepository shipmentRepository) {
-        this.orderRepository = orderRepository;
-        this.orderVariantRepository = orderVariantRepository;
-        this.userRepository = userRepository;
-        this.statusRepository = statusRepository;
-        this.paymentMethodRepository = paymentMethodRepository;
-        this.variantRepository = variantRepository;
-        this.templateService = templateService;
-        this.shipmentRepository = shipmentRepository;
-    }
+    private final NotificationService notificationService;
 
     @Override
     public void addOrder(OrderRequest request) throws MessagingException {
@@ -105,10 +93,17 @@ public class OrderServiceImp implements OrderService {
 
 
         EmailDetail emailDetail = new EmailDetail();
-        emailDetail.setReceipient(user.getEmail());
-        emailDetail.setMsgSubject("Order Creation");
+        emailDetail.setTo(user.getEmail());
+        emailDetail.setSubject("Order Creation");
+        emailDetail.setBody(EmailBodyCreation.create(
+                orderEntity.getUser().getFirstName() + " " + orderEntity.getUser().getLastName(),
+                String.valueOf(savedOrder.getId()),
+                orderEntity.getCreateDate().toString(),
+                String.valueOf(orderEntity.getTotal())
+        ));
 
-        templateService.orderCreateTemplate(emailDetail, savedOrder.getUser(), savedOrder);
+
+        notificationService.sendOrderCreationTemplate(emailDetail);
 
     }
 
@@ -144,10 +139,18 @@ public class OrderServiceImp implements OrderService {
         );
 
         EmailDetail emailDetail = new EmailDetail();
-        emailDetail.setReceipient(orderEntity.getUser().getEmail());
-        emailDetail.setMsgSubject("Order Creation");
+        emailDetail.setTo(orderEntity.getUser().getEmail());
+        emailDetail.setSubject("Order Creation");
+        emailDetail.setBody(EmailBodyCreation.create(
+                orderEntity.getUser().getFirstName() + " " + orderEntity.getUser().getLastName(),
+                String.valueOf(orderId),
+                orderEntity.getCreateDate().toString(),
+                String.valueOf(orderEntity.getTotal()),
+                orderEntity.getUser().getFirstName() + " " + orderEntity.getUser().getLastName(),
+                orderEntity.getUser().getAddress().toString()
+        ));
 
-        templateService.orderConfirmTemplate(emailDetail, orderEntity);
+        notificationService.sendOrderConfirmationTemplate(emailDetail);
 
         orderRepository.save(orderEntity);
     }
@@ -165,10 +168,14 @@ public class OrderServiceImp implements OrderService {
         );
 
         EmailDetail emailDetail = new EmailDetail();
-        emailDetail.setReceipient(orderEntity.getUser().getEmail());
-        emailDetail.setMsgSubject("Order Delivery");
+        emailDetail.setTo(orderEntity.getUser().getEmail());
+        emailDetail.setSubject("Order Delivery");
+        emailDetail.setBody(EmailBodyCreation.create(
+                orderEntity.getUser().getFirstName() + " " + orderEntity.getUser().getLastName(),
+                String.valueOf(orderId)
+        ));
 
-        templateService.orderDeliveryTemplate(emailDetail, orderEntity.getUser(), orderEntity);
+        notificationService.sendDeliveryTemplate(emailDetail);
 
         orderRepository.save(orderEntity);
     }
